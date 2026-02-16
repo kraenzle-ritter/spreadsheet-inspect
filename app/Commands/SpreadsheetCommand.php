@@ -155,6 +155,7 @@ class SpreadsheetCommand extends Command
     protected function generateHtml(): string
     {
         $data = $this->reportData;
+        $logoDataUri = $this->getInvertedLogoDataUri();
         $html = <<<HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -170,60 +171,64 @@ class SpreadsheetCommand extends Command
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
+            padding-top: 10px;
             color: #333;
+            position: relative;
         }
-        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
-        h2 { color: #34495e; margin-top: 30px; border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; }
-        h3 { color: #7f8c8d; margin-top: 20px; }
-        .meta { color: #7f8c8d; font-size: 0.9em; margin-bottom: 20px; }
-        .stat { background: #ecf0f1; padding: 3px 8px; border-radius: 4px; font-family: monospace; }
+        .logo { width: 60px; height: 60px; position: absolute; top: 10px; right: 20px; }
+        h1 { color: #6b7280; border-bottom: 3px solid #9ca3af; padding-bottom: 10px; margin-top: 0; }
+        h2 { color: #6b7280; margin-top: 30px; border-bottom: 1px solid #d1d5db; padding-bottom: 5px; }
+        h3 { color: #9ca3af; margin-top: 20px; }
+        .meta { color: #6b7280; font-size: 0.9em; margin-bottom: 20px; }
+        .stat { background: #f3f4f6; padding: 3px 8px; border-radius: 4px; font-family: monospace; }
         .column-card {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
             padding: 15px;
             margin: 15px 0;
         }
-        .column-name { font-weight: bold; color: #2c3e50; font-size: 1.1em; }
+        .column-name { font-weight: bold; color: #374151; font-size: 1.1em; }
         .values-list {
             background: white;
-            border: 1px solid #dee2e6;
+            border: 1px solid #e5e7eb;
             border-radius: 4px;
             padding: 10px;
             margin-top: 10px;
         }
-        .value-item { padding: 3px 0; border-bottom: 1px solid #f1f1f1; }
+        .value-item { padding: 3px 0; border-bottom: 1px solid #f3f4f6; }
         .value-item:last-child { border-bottom: none; }
-        .count { color: #6c757d; font-size: 0.9em; }
+        .count { color: #6b7280; font-size: 0.9em; }
         .progress-bar {
-            background: #e9ecef;
+            background: #e5e7eb;
             border-radius: 4px;
             height: 8px;
             margin-top: 5px;
         }
         .progress-fill {
-            background: #28a745;
+            background: #22c55e;
             height: 100%;
             border-radius: 4px;
         }
         .sheet-list { list-style: none; padding: 0; }
         .sheet-list li {
             padding: 8px 12px;
-            background: #f8f9fa;
+            background: #f9fafb;
             margin: 5px 0;
             border-radius: 4px;
-            border-left: 4px solid #3498db;
+            border-left: 4px solid #3b82f6;
         }
-        .sheet-list .index { color: #6c757d; font-weight: bold; }
+        .sheet-list .index { color: #6b7280; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #dee2e6; }
-        th { background: #f8f9fa; font-weight: 600; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f9fafb; font-weight: 600; }
         .image-stats { display: flex; gap: 20px; flex-wrap: wrap; }
-        .image-stat { background: #e3f2fd; padding: 10px 15px; border-radius: 8px; }
-        footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #dee2e6; color: #6c757d; font-size: 0.85em; }
+        .image-stat { background: #dbeafe; padding: 10px 15px; border-radius: 8px; }
+        footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.85em; }
     </style>
 </head>
 <body>
+    <img src="{$logoDataUri}" alt="Logo" class="logo">
     <h1>Spreadsheet Report</h1>
     <div class="meta">
         <strong>File:</strong> {$data['file']}<br>
@@ -314,7 +319,7 @@ HTML;
     {
         $options = new Options();
         $options->set('isHtml5ParserEnabled', true);
-        $options->set('isRemoteEnabled', false);
+        $options->set('isRemoteEnabled', true);
         $options->set('defaultFont', 'DejaVu Sans');
 
         $dompdf = new Dompdf($options);
@@ -746,5 +751,37 @@ HTML;
             \PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing::MIMETYPE_JPEG => 'jpg',
             default => 'png',
         };
+    }
+
+    protected function getInvertedLogoDataUri(): string
+    {
+        $logoUrl = 'https://avatars.githubusercontent.com/u/67142673?s=400&u=534a1480b999c454e525885361ee7aeb541b230a&v=4';
+        
+        try {
+            $imageData = @file_get_contents($logoUrl);
+            if ($imageData === false) {
+                return '';
+            }
+
+            $image = @imagecreatefromstring($imageData);
+            if ($image === false) {
+                return '';
+            }
+
+            // Invert colors
+            imagefilter($image, IMG_FILTER_NEGATE);
+            // Convert to grayscale
+            imagefilter($image, IMG_FILTER_GRAYSCALE);
+
+            // Capture as PNG
+            ob_start();
+            imagepng($image);
+            $invertedData = ob_get_clean();
+            imagedestroy($image);
+
+            return 'data:image/png;base64,' . base64_encode($invertedData);
+        } catch (\Throwable $e) {
+            return '';
+        }
     }
 }
