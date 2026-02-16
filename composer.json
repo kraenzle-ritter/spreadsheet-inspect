@@ -1,12 +1,15 @@
 {
     "name": "kraenzle-ritter/spreadsheet-inspect",
-    "description": "The Laravel Zero Framework.",
+    "description": "CLI tool to inspect and analyze Excel/ODS spreadsheet files",
     "keywords": [
         "spreadsheet",
+        "excel",
+        "xlsx",
+        "ods",
         "inspect",
-        "zero",
-        "php",
-        "cli"
+        "analyze",
+        "cli",
+        "php"
     ],
     "homepage": "https://github.com/kraenzle-ritter/spreadsheet-inspect",
     "type": "project",
@@ -56,6 +59,6 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "bin": [
-        "application"
+        "inspect"
     ]
 }
