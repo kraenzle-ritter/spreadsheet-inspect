@@ -1,7 +1,5 @@
 <?php
 
-use function Pest\Laravel\artisan;
-
 $testFile = 'vendor/rap2hpoutre/fast-excel/tests/test1.xlsx';
 
 it('fails when file does not exist', function () {
@@ -77,15 +75,15 @@ it('warns when no sheet is specified without --sheets', function () use ($testFi
 
 it('handles date formatting in test file', function () {
     $testFile = 'vendor/rap2hpoutre/fast-excel/tests/test-dates.xlsx';
-    
+
     $this->artisan('spreadsheet', ['file' => $testFile, '--sheet' => '1'])
         ->assertExitCode(0);
 });
 
 it('generates HTML report', function () {
     $testFile = 'tests/fixtures/test.ods';
-    $outputFile = sys_get_temp_dir() . '/test-report-' . uniqid() . '.html';
-    
+    $outputFile = sys_get_temp_dir().'/test-report-'.uniqid().'.html';
+
     $this->artisan('spreadsheet', [
         'file' => $testFile,
         '--sheet' => '1',
@@ -94,20 +92,20 @@ it('generates HTML report', function () {
     ])
         ->expectsOutputToContain('HTML report saved')
         ->assertExitCode(0);
-    
+
     expect(file_exists($outputFile))->toBeTrue();
     $content = file_get_contents($outputFile);
     expect($content)->toContain('<!DOCTYPE html');
     expect($content)->toContain('Spreadsheet Report');
     expect($content)->toContain('TestSheet');
-    
+
     unlink($outputFile);
 });
 
 it('generates PDF report', function () {
     $testFile = 'tests/fixtures/test.ods';
-    $outputFile = sys_get_temp_dir() . '/test-report-' . uniqid() . '.pdf';
-    
+    $outputFile = sys_get_temp_dir().'/test-report-'.uniqid().'.pdf';
+
     $this->artisan('spreadsheet', [
         'file' => $testFile,
         '--sheet' => '1',
@@ -116,20 +114,20 @@ it('generates PDF report', function () {
     ])
         ->expectsOutputToContain('PDF report saved')
         ->assertExitCode(0);
-    
+
     expect(file_exists($outputFile))->toBeTrue();
     expect(filesize($outputFile))->toBeGreaterThan(0);
-    
+
     // Check PDF magic bytes
     $content = file_get_contents($outputFile);
     expect(str_starts_with($content, '%PDF'))->toBeTrue();
-    
+
     unlink($outputFile);
 });
 
 it('fails when output-file is missing for html output', function () {
     $testFile = 'tests/fixtures/test.ods';
-    
+
     $this->artisan('spreadsheet', [
         'file' => $testFile,
         '--sheet' => '1',
@@ -141,7 +139,7 @@ it('fails when output-file is missing for html output', function () {
 
 it('fails when output-file is missing for pdf output', function () {
     $testFile = 'tests/fixtures/test.ods';
-    
+
     $this->artisan('spreadsheet', [
         'file' => $testFile,
         '--sheet' => '1',
@@ -153,7 +151,7 @@ it('fails when output-file is missing for pdf output', function () {
 
 it('works with LibreOffice ODS files', function () {
     $testFile = 'tests/fixtures/test.ods';
-    
+
     $this->artisan('spreadsheet', ['file' => $testFile, '--sheet' => '1'])
         ->expectsOutputToContain('TestSheet')
         ->expectsOutputToContain('Name')

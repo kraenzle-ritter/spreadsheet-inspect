@@ -4,7 +4,8 @@ use App\Commands\SpreadsheetCommand;
 use Illuminate\Support\Collection;
 
 beforeEach(function () {
-    $this->command = new class extends SpreadsheetCommand {
+    $this->command = new class extends SpreadsheetCommand
+    {
         // Expose protected methods for testing
         public function publicTruncateValue($value, int $maxLength = 100): string
         {
@@ -32,8 +33,8 @@ describe('truncateValue', function () {
     it('truncates long strings with ellipsis', function () {
         $longString = str_repeat('a', 150);
         $result = $this->command->publicTruncateValue($longString, 100);
-        
-        expect(strlen($result))->toBe(101); // 100 chars + ellipsis
+
+        expect(mb_strlen($result))->toBe(101); // 100 chars + ellipsis (use mb_strlen for UTF-8)
         expect($result)->toEndWith('…');
     });
 
@@ -81,7 +82,7 @@ describe('sanitizeSheet', function () {
     it('handles empty collections', function () {
         $rows = collect([]);
         $result = $this->command->publicSanitizeSheet($rows);
-        
+
         expect($result)->toBeEmpty();
     });
 
@@ -125,27 +126,27 @@ describe('home directory expansion', function () {
     it('expands tilde to home directory', function () {
         $home = getenv('HOME');
         $path = '~/test/file.xlsx';
-        $expected = $home . '/test/file.xlsx';
-        
+        $expected = $home.'/test/file.xlsx';
+
         // Test the expansion logic directly
         if (str_starts_with($path, '~')) {
-            $expanded = getenv('HOME') . substr($path, 1);
+            $expanded = getenv('HOME').substr($path, 1);
         } else {
             $expanded = $path;
         }
-        
+
         expect($expanded)->toBe($expected);
     });
 
     it('leaves absolute paths unchanged', function () {
         $path = '/absolute/path/file.xlsx';
-        
+
         if (str_starts_with($path, '~')) {
-            $expanded = getenv('HOME') . substr($path, 1);
+            $expanded = getenv('HOME').substr($path, 1);
         } else {
             $expanded = $path;
         }
-        
+
         expect($expanded)->toBe('/absolute/path/file.xlsx');
     });
 });

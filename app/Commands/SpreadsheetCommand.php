@@ -37,19 +37,21 @@ class SpreadsheetCommand extends Command
 
         // Expand ~ to home directory
         if (str_starts_with($file, '~')) {
-            $file = getenv('HOME') . substr($file, 1);
+            $file = getenv('HOME').substr($file, 1);
         }
 
-        if (!file_exists($file)) {
+        if (! file_exists($file)) {
             $this->error("File not found: $file");
+
             return 1;
         }
 
         $outputFormat = $this->option('output') ?? 'console';
         $outputFile = $this->option('output-file');
 
-        if (in_array($outputFormat, ['html', 'pdf']) && !$outputFile) {
+        if (in_array($outputFormat, ['html', 'pdf']) && ! $outputFile) {
             $this->error("--output-file is required when using --output=$outputFormat");
+
             return 1;
         }
 
@@ -71,7 +73,7 @@ class SpreadsheetCommand extends Command
             foreach ($sheetNames as $i => $s) {
                 $this->line("- **[$i]** `$s`");
             }
-            $this->line("");
+            $this->line('');
         }
 
         // --sheets: Nur Sheetnamen anzeigen
@@ -82,19 +84,21 @@ class SpreadsheetCommand extends Command
         $sheetOption = $this->option('sheet');
         $sheetNumber = $this->getSheetNumber($sheetNames, $sheetOption);
 
-        if (!$sheetNumber) {
+        if (! $sheetNumber) {
             $this->error("Sheet $sheetOption not found.");
+
             return 1;
         }
 
         $sheetName = $sheetNames[$sheetNumber] ?? "Sheet $sheetNumber";
         $this->reportData['selectedSheet'] = ['index' => $sheetNumber, 'name' => $sheetName];
 
-        $rows = collect((new FastExcel())->sheet($sheetNumber)->import($file));
+        $rows = collect((new FastExcel)->sheet($sheetNumber)->import($file));
         $rows = $this->sanitizeSheet($rows);
 
         if ($rows->isEmpty()) {
             $this->warn("No data found in sheet '$sheetName' ($sheetNumber)");
+
             return $this->outputReport($outputFormat, $outputFile);
         }
 
@@ -103,7 +107,7 @@ class SpreadsheetCommand extends Command
             $this->info("# Sheet `$sheetName` (Index: $sheetNumber)\n");
         }
 
-        if ($this->option('sheet') && !$this->option('column')) {
+        if ($this->option('sheet') && ! $this->option('column')) {
             $this->analyzeSheetData($rows, $outputFormat === 'console');
         }
 
@@ -131,24 +135,27 @@ class SpreadsheetCommand extends Command
         if ($format === 'html') {
             // Expand ~ to home directory
             if (str_starts_with($outputFile, '~')) {
-                $outputFile = getenv('HOME') . substr($outputFile, 1);
+                $outputFile = getenv('HOME').substr($outputFile, 1);
             }
             file_put_contents($outputFile, $html);
             $this->info("HTML report saved to: $outputFile");
+
             return 0;
         }
 
         if ($format === 'pdf') {
             // Expand ~ to home directory
             if (str_starts_with($outputFile, '~')) {
-                $outputFile = getenv('HOME') . substr($outputFile, 1);
+                $outputFile = getenv('HOME').substr($outputFile, 1);
             }
             $this->generatePdf($html, $outputFile);
             $this->info("PDF report saved to: $outputFile");
+
             return 0;
         }
 
         $this->error("Unknown output format: $format");
+
         return 1;
     }
 
@@ -244,7 +251,7 @@ HTML;
             $html .= "<li{$selected}><span class=\"index\">[$index]</span> $name</li>";
         }
 
-        $html .= "</ul>";
+        $html .= '</ul>';
 
         if (isset($data['analysis'])) {
             $analysis = $data['analysis'];
@@ -252,54 +259,54 @@ HTML;
             $html .= "<p><strong>Total Rows:</strong> <span class=\"stat\">{$analysis['totalRows']}</span></p>";
 
             foreach ($analysis['columns'] as $col) {
-                $html .= "<div class=\"column-card\">";
+                $html .= '<div class="column-card">';
                 $html .= "<div class=\"column-name\">{$col['name']}</div>";
                 $html .= "<p><strong>Filled:</strong> {$col['filled']} / {$col['total']} ({$col['percent']}%)</p>";
                 $html .= "<div class=\"progress-bar\"><div class=\"progress-fill\" style=\"width: {$col['percent']}%\"></div></div>";
                 $html .= "<p><strong>Distinct Values:</strong> {$col['distinctCount']}</p>";
 
-                if (!empty($col['values'])) {
-                    $html .= "<div class=\"values-list\">";
+                if (! empty($col['values'])) {
+                    $html .= '<div class="values-list">';
                     foreach ($col['values'] as $val => $count) {
                         $escapedVal = htmlspecialchars((string) $val);
                         $html .= "<div class=\"value-item\"><code>$escapedVal</code> <span class=\"count\">($count)</span></div>";
                     }
                     if ($col['hasMore'] ?? false) {
-                        $html .= "<div class=\"value-item\"><em>… and " . ($col['distinctCount'] - 10) . " more</em></div>";
+                        $html .= '<div class="value-item"><em>… and '.($col['distinctCount'] - 10).' more</em></div>';
                     }
-                    $html .= "</div>";
+                    $html .= '</div>';
                 }
-                $html .= "</div>";
+                $html .= '</div>';
             }
         }
 
         if (isset($data['images'])) {
             $images = $data['images'];
-            $html .= "<h2>Images in Sheet</h2>";
+            $html .= '<h2>Images in Sheet</h2>';
             $html .= "<p><strong>Total Images:</strong> <span class=\"stat\">{$images['total']}</span></p>";
 
             if ($images['total'] > 0) {
-                $html .= "<div class=\"image-stats\">";
+                $html .= '<div class="image-stats">';
                 foreach ($images['byColumn'] as $col => $count) {
                     $html .= "<div class=\"image-stat\"><strong>Column $col:</strong> $count image(s)</div>";
                 }
-                $html .= "</div>";
+                $html .= '</div>';
                 $html .= "<p><strong>Rows with images:</strong> {$images['rowsWithImages']}</p>";
             }
         }
 
         if (isset($data['crossSheet'])) {
             $cross = $data['crossSheet'];
-            $html .= "<h2>Cross-Sheet References</h2>";
+            $html .= '<h2>Cross-Sheet References</h2>';
             $html .= "<p><strong>Source Column:</strong> {$cross['sourceColumn']}</p>";
             $html .= "<p><strong>Values Found:</strong> {$cross['found']} / {$cross['total']} ({$cross['percent']}%)</p>";
 
-            if (!empty($cross['matches'])) {
-                $html .= "<table><thead><tr><th>Sheet</th><th>Column</th><th>Matches</th></tr></thead><tbody>";
+            if (! empty($cross['matches'])) {
+                $html .= '<table><thead><tr><th>Sheet</th><th>Column</th><th>Matches</th></tr></thead><tbody>';
                 foreach ($cross['matches'] as $match) {
                     $html .= "<tr><td>{$match['sheetName']}</td><td>{$match['column']}</td><td>{$match['count']}</td></tr>";
                 }
-                $html .= "</tbody></table>";
+                $html .= '</tbody></table>';
             }
         }
 
@@ -317,7 +324,7 @@ HTML;
 
     protected function generatePdf(string $html, string $outputFile): void
     {
-        $options = new Options();
+        $options = new Options;
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isRemoteEnabled', true);
         $options->set('defaultFont', 'DejaVu Sans');
@@ -334,9 +341,9 @@ HTML;
     {
         $memory = $this->option('memory');
         if (is_numeric($memory) && $memory > 0) {
-            ini_set('memory_limit', $memory . 'M');
+            ini_set('memory_limit', $memory.'M');
         } else {
-            $this->warn("Invalid memory value provided. Skipping memory_limit change.");
+            $this->warn('Invalid memory value provided. Skipping memory_limit change.');
         }
     }
 
@@ -351,23 +358,27 @@ HTML;
         foreach ($sheets as $sheet) {
             $result[$i++] = $sheet;
         }
+
         return $result;
     }
 
     protected function getSheetNumber(array $sheetNames, ?string $sheetOption): ?int
     {
         if ($sheetOption === null) {
-            $this->warn("No sheet specified. Use --sheet=1 or --sheet=SheetName");
+            $this->warn('No sheet specified. Use --sheet=1 or --sheet=SheetName');
+
             return null;
         }
 
         // Ist sheet eine Zahl?
         if (is_numeric($sheetOption)) {
             $index = (int) $sheetOption;
-            if (!isset($sheetNames[$index])) {
-                $this->error("Sheet index '$index' is out of range. Max index: " . count($sheetNames));
+            if (! isset($sheetNames[$index])) {
+                $this->error("Sheet index '$index' is out of range. Max index: ".count($sheetNames));
+
                 return null;
             }
+
             return $index;
         }
 
@@ -377,6 +388,7 @@ HTML;
         }
 
         $this->error("Sheet '$sheetOption' not found in list of sheets.");
+
         return null;
     }
 
@@ -396,9 +408,9 @@ HTML;
         }
 
         foreach ($headers as $header) {
-            $values = $rows->map(fn($row) => $row[$header] ?? null);
+            $values = $rows->map(fn ($row) => $row[$header] ?? null);
 
-            $nonEmpty = $values->filter(fn($v) => $v !== null && $v !== '');
+            $nonEmpty = $values->filter(fn ($v) => $v !== null && $v !== '');
 
             $count = $nonEmpty->count();
             $percent = $totalRows > 0 ? round(($count / $totalRows) * 100, 2) : 0;
@@ -439,16 +451,16 @@ HTML;
                 if ($distinctCount > 0 && $distinctCount <= 20) {
                     $this->line("\n  Values:");
                     foreach ($distinct as $val => $occurrences) {
-                        $this->line("  - `" . $this->truncateValue($val, 100) . "` ($occurrences)");
+                        $this->line('  - `'.$this->truncateValue($val, 100)."` ($occurrences)");
                     }
                 } elseif ($distinctCount > 20) {
                     $this->line("\n  Top 10 (of $distinctCount):");
                     foreach ($distinct->take(10) as $val => $occurrences) {
-                        $this->line("  - `" . $this->truncateValue($val, 100) . "` ($occurrences)");
+                        $this->line('  - `'.$this->truncateValue($val, 100)."` ($occurrences)");
                     }
-                    $this->line("  - *… and " . ($distinctCount - 10) . " more*");
+                    $this->line('  - *… and '.($distinctCount - 10).' more*');
                 }
-                $this->line("");
+                $this->line('');
             }
         }
     }
@@ -457,23 +469,22 @@ HTML;
     {
         $str = (string) $value;
         if (strlen($str) > $maxLength) {
-            return substr($str, 0, $maxLength) . '…';
+            return substr($str, 0, $maxLength).'…';
         }
+
         return $str;
     }
 
     protected function sanitizeSheet(Collection $rows): Collection
     {
-        return $rows->map(fn($row) =>
-            collect($row)->map(fn($value) =>
-                $value instanceof \DateTimeInterface ? $value->format('Y-m-d') : $value
-            )->toArray()
+        return $rows->map(fn ($row) => collect($row)->map(fn ($value) => $value instanceof \DateTimeInterface ? $value->format('Y-m-d') : $value
+        )->toArray()
         );
     }
 
     protected function analyzeCrossSheetUsage(string $file, int $sourceSheet, string $sourceColumn, array $sheetNames, bool $consoleOutput = true): void
     {
-        $sourceSheetName = $sheetNames[$sourceSheet] ?? "Unknown";
+        $sourceSheetName = $sheetNames[$sourceSheet] ?? 'Unknown';
 
         if ($consoleOutput) {
             $this->info("\nCross-sheet reference check for column '$sourceColumn' in sheet $sourceSheetName:");
@@ -483,7 +494,9 @@ HTML;
         $sourceSet = $sourceValues->all();
 
         $targetSheetNumber = $this->resolveCrossSheetTarget($sheetNames);
-        if ($targetSheetNumber === false) return;
+        if ($targetSheetNumber === false) {
+            return;
+        }
 
         $targetColumn = $this->option('target-column');
         $matches = $this->findCrossSheetMatches($file, $sourceSet, $targetColumn, $sheetNames, $sourceSheet, $targetSheetNumber, $consoleOutput);
@@ -495,20 +508,23 @@ HTML;
     {
         $rows = collect((new FastExcel)->sheet($sheetIndex)->import($file));
 
-        return $rows->map(fn($row) => $row[$column] ?? null)
-            ->map(fn($v) => $v instanceof \DateTimeInterface ? $v->format('Y-m-d') : $v)
-            ->filter(fn($v) => $v !== null && $v !== '')
+        return $rows->map(fn ($row) => $row[$column] ?? null)
+            ->map(fn ($v) => $v instanceof \DateTimeInterface ? $v->format('Y-m-d') : $v)
+            ->filter(fn ($v) => $v !== null && $v !== '')
             ->values();
     }
 
     protected function resolveCrossSheetTarget(array $sheetNames): int|false|null
     {
         $option = $this->option('cross-sheet');
-        if (!$option) return null;
+        if (! $option) {
+            return null;
+        }
 
         $target = $this->getSheetNumber($sheetNames, $option);
         if ($target === null) {
             $this->error("Cross-sheet '$option' not found.");
+
             return false;
         }
 
@@ -527,8 +543,12 @@ HTML;
         $matches = [];
 
         foreach ($sheetNames as $index => $name) {
-            if ($index === $sourceSheet) continue;
-            if ($onlySheet !== null && $index !== $onlySheet) continue;
+            if ($index === $sourceSheet) {
+                continue;
+            }
+            if ($onlySheet !== null && $index !== $onlySheet) {
+                continue;
+            }
 
             if ($consoleOutput) {
                 $this->line("Checking sheet: $name ($index)");
@@ -538,22 +558,25 @@ HTML;
             if ($this->option('debug')) {
                 $rows = $rows->take(100);
                 if ($consoleOutput) {
-                    $this->warn("Debug mode: only checking first 100 rows");
+                    $this->warn('Debug mode: only checking first 100 rows');
                 }
             }
 
-            if ($rows->isEmpty()) continue;
-
-            $headers = array_keys($rows->first());
-            if ($column && !in_array($column, $headers)) {
-                if ($consoleOutput) {
-                    $this->warn("Column '$column' not found in '$name'");
-                }
+            if ($rows->isEmpty()) {
                 continue;
             }
 
-            $values = $rows->map(fn($row) => $row[$column] ?? null)
-                ->map(fn($v) => $v instanceof \DateTimeInterface ? $v->format('Y-m-d') : $v)
+            $headers = array_keys($rows->first());
+            if ($column && ! in_array($column, $headers)) {
+                if ($consoleOutput) {
+                    $this->warn("Column '$column' not found in '$name'");
+                }
+
+                continue;
+            }
+
+            $values = $rows->map(fn ($row) => $row[$column] ?? null)
+                ->map(fn ($v) => $v instanceof \DateTimeInterface ? $v->format('Y-m-d') : $v)
                 ->filter();
 
             $intersected = [];
@@ -563,7 +586,7 @@ HTML;
                 }
             }
 
-            if (!empty($intersected)) {
+            if (! empty($intersected)) {
                 $matches[] = [
                     'sheet' => $index,
                     'sheetName' => $name,
@@ -595,10 +618,10 @@ HTML;
             $this->line("Values found: $found / $total ($percent%)");
 
             foreach ($matches as $match) {
-                $sheetName = $sheetNames[$match['sheet']] ?? "Unknown";
+                $sheetName = $sheetNames[$match['sheet']] ?? 'Unknown';
                 $this->line(" - In sheet $sheetName ({$match['sheet']}), column '{$match['column']}' → {$match['count']} match(es)");
                 if ($match['values']->count() <= 10) {
-                    $this->line("   → " . $match['values']->implode(', '));
+                    $this->line('   → '.$match['values']->implode(', '));
                 }
             }
         }
@@ -606,7 +629,7 @@ HTML;
 
     protected function analyzeImages(string $file, int $sheetNumber, array $sheetNames, bool $consoleOutput = true): void
     {
-        $sheetName = $sheetNames[$sheetNumber] ?? "Unknown";
+        $sheetName = $sheetNames[$sheetNumber] ?? 'Unknown';
 
         if ($consoleOutput) {
             $this->info("\n## Images in sheet `$sheetName`\n");
@@ -642,7 +665,8 @@ HTML;
             $this->line("- **Total images found**: `$imageCount`");
 
             if ($imageCount === 0) {
-                $this->warn("No images found in this sheet.");
+                $this->warn('No images found in this sheet.');
+
                 return;
             }
 
@@ -652,7 +676,7 @@ HTML;
             }
 
             $this->line("\n### Distribution\n");
-            $this->line("- **Rows with images**: `" . count($imagesByRow) . "`");
+            $this->line('- **Rows with images**: `'.count($imagesByRow).'`');
         }
 
         $extractDir = $this->option('extract-images');
@@ -664,10 +688,12 @@ HTML;
             $this->line("\nSample image details (first 10):");
             $i = 0;
             foreach ($drawings as $drawing) {
-                if ($i >= 10) break;
-                $this->line("   [{$drawing->getCoordinates()}] " .
-                    "Name: " . ($drawing->getName() ?: 'unnamed') . ", " .
-                    "Description: " . ($drawing->getDescription() ?: 'none'));
+                if ($i >= 10) {
+                    break;
+                }
+                $this->line("   [{$drawing->getCoordinates()}] ".
+                    'Name: '.($drawing->getName() ?: 'unnamed').', '.
+                    'Description: '.($drawing->getDescription() ?: 'none'));
                 $i++;
             }
         }
@@ -676,10 +702,10 @@ HTML;
     protected function extractImages($drawings, string $outputDir, string $sheetName): void
     {
         if (str_starts_with($outputDir, '~')) {
-            $outputDir = getenv('HOME') . substr($outputDir, 1);
+            $outputDir = getenv('HOME').substr($outputDir, 1);
         }
 
-        if (!is_dir($outputDir)) {
+        if (! is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
             $this->line("Created directory: $outputDir");
         }
@@ -732,7 +758,7 @@ HTML;
             } catch (\Throwable $e) {
                 $failed++;
                 if ($this->option('debug')) {
-                    $this->warn("Failed to extract image $index: " . $e->getMessage());
+                    $this->warn("Failed to extract image $index: ".$e->getMessage());
                 }
             }
         }
@@ -756,7 +782,7 @@ HTML;
     protected function getInvertedLogoDataUri(): string
     {
         $logoUrl = 'https://avatars.githubusercontent.com/u/67142673?s=400&u=534a1480b999c454e525885361ee7aeb541b230a&v=4';
-        
+
         try {
             $imageData = @file_get_contents($logoUrl);
             if ($imageData === false) {
@@ -779,7 +805,7 @@ HTML;
             $invertedData = ob_get_clean();
             imagedestroy($image);
 
-            return 'data:image/png;base64,' . base64_encode($invertedData);
+            return 'data:image/png;base64,'.base64_encode($invertedData);
         } catch (\Throwable $e) {
             return '';
         }
