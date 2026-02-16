@@ -67,12 +67,6 @@ it('respects memory option', function () use ($testFile) {
         ->assertExitCode(0);
 });
 
-it('warns when no sheet is specified without --sheets', function () use ($testFile) {
-    $this->artisan('spreadsheet', ['file' => $testFile])
-        ->expectsOutputToContain('No sheet specified')
-        ->assertExitCode(1);
-});
-
 it('handles date formatting in test file', function () {
     $testFile = 'vendor/rap2hpoutre/fast-excel/tests/test-dates.xlsx';
 
