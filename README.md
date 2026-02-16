@@ -1,0 +1,135 @@
+# Spreadsheet Inspect
+
+[![Tests](https://github.com/kraenzle-ritter/spreadsheet-inspect/actions/workflows/tests.yml/badge.svg)](https://github.com/kraenzle-ritter/spreadsheet-inspect/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A CLI tool to inspect Excel (.xlsx, .xls) and LibreOffice (.ods) spreadsheet files. Analyze sheet structures, column statistics, find cross-sheet references, and extract embedded images.
+
+## Features
+
+- 📊 **Sheet Analysis** – List all sheets, view column headers, row counts, and fill rates
+- 📈 **Value Statistics** – See distinct values per column with occurrence counts
+- 🔗 **Cross-Sheet Reference Check** – Find where values from one sheet appear in others
+- 🖼️ **Image Inspection** – Count and extract embedded images/drawings
+- 📁 **Multiple Formats** – Supports Excel (.xlsx, .xls) and LibreOffice Calc (.ods)
+
+## Installation
+
+```bash
+git clone https://github.com/kraenzle-ritter/spreadsheet-inspect.git
+cd spreadsheet-inspect
+composer install
+```
+
+## Usage
+
+### List all sheets
+
+```bash
+php application inspect myfile.xlsx --sheets
+```
+
+### Analyze a specific sheet
+
+```bash
+php application inspect myfile.xlsx --sheet=1
+# or by name
+php application inspect myfile.xlsx --sheet="Sheet Name"
+```
+
+**Output:**
+```
+## Available sheets
+- **[1]** `Products`
+- **[2]** `Categories`
+
+# Sheet `Products` (Index: 1)
+
+## Sheet statistics
+- **Rows** (excluding header): `150`
+
+### `ProductID`
+- **Filled**: `150 / 150` (100%)
+- **Distinct**: `150`
+
+### `Category`
+- **Filled**: `148 / 150` (98.67%)
+- **Distinct**: `12`
+
+  Values:
+  - `Electronics` (45)
+  - `Clothing` (32)
+  ...
+```
+
+### Analyze images in a sheet
+
+```bash
+php application inspect myfile.xlsx --sheet=1 --images
+```
+
+### Extract images to a directory
+
+```bash
+php application inspect myfile.xlsx --sheet=1 --extract-images=./images
+```
+
+### Cross-sheet reference check
+
+Find where values from a column appear in other sheets:
+
+```bash
+php application inspect myfile.xlsx --sheet=1 --column=ProductID
+```
+
+Check against a specific target sheet:
+
+```bash
+php application inspect myfile.xlsx --sheet=1 --column=ProductID --cross-sheet=2
+```
+
+Compare only against a specific column in target sheets:
+
+```bash
+php application inspect myfile.xlsx --sheet=1 --column=ProductID --target-column=ID
+```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `--sheets` | List all sheet names only |
+| `--sheet=` | Inspect a specific sheet (by index or name) |
+| `--column=` | Cross-search for values from this column |
+| `--cross-sheet=` | Only check this target sheet |
+| `--target-column=` | Only compare against this column in target sheets |
+| `--images` | Count and list images in the sheet |
+| `--extract-images=` | Extract images to specified directory |
+| `--debug` | Show detailed matching values |
+| `--memory=` | Memory limit in MB (default: 2000) |
+
+## Supported Formats
+
+- Microsoft Excel: `.xlsx`, `.xls`
+- LibreOffice Calc: `.ods`
+
+## Requirements
+
+- PHP 8.1+
+- Composer
+
+## Testing
+
+```bash
+./vendor/bin/pest
+```
+
+## Built With
+
+- [Laravel Zero](https://laravel-zero.com/) – Micro-framework for console applications
+- [PhpSpreadsheet](https://phpspreadsheet.readthedocs.io/) – Library for reading/writing spreadsheet files
+- [FastExcel](https://github.com/rap2hpoutre/fast-excel) – Fast Excel import/export
+
+## License
+
+MIT License. See [LICENSE](LICENSE) for details.
