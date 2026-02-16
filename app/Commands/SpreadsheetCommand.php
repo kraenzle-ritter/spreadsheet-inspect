@@ -14,7 +14,7 @@ class SpreadsheetCommand extends Command
     protected $signature = 'spreadsheet
                             {file : Path to the Excel file}
                             {--sheets : List all sheet names}
-                            {--sheet= : Inspect a specific sheet by name or index}
+                            {--sheet=1 : Inspect a specific sheet by name or index (default: 1)}
                             {--column= : Cross search for values from this column}
                             {--cross-sheet= : Only check this sheet}
                             {--target-column= : Only compare against this column in target sheets}
