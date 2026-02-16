@@ -105,8 +105,24 @@ php application inspect myfile.xlsx --sheet=1 --column=ProductID --target-column
 | `--target-column=` | Only compare against this column in target sheets |
 | `--images` | Count and list images in the sheet |
 | `--extract-images=` | Extract images to specified directory |
+| `--output=` | Output format: `console` (default), `html`, `pdf` |
+| `--output-file=` | Output file path (required for html/pdf) |
 | `--debug` | Show detailed matching values |
 | `--memory=` | Memory limit in MB (default: 2000) |
+
+### Export to HTML or PDF
+
+Generate a styled HTML report:
+
+```bash
+php application inspect myfile.xlsx --sheet=1 --output=html --output-file=report.html
+```
+
+Generate a PDF report:
+
+```bash
+php application inspect myfile.xlsx --sheet=1 --output=pdf --output-file=report.pdf
+```
 
 ## Supported Formats
 
@@ -129,6 +145,7 @@ php application inspect myfile.xlsx --sheet=1 --column=ProductID --target-column
 - [Laravel Zero](https://laravel-zero.com/) – Micro-framework for console applications
 - [PhpSpreadsheet](https://phpspreadsheet.readthedocs.io/) – Library for reading/writing spreadsheet files
 - [FastExcel](https://github.com/rap2hpoutre/fast-excel) – Fast Excel import/export
+- [Dompdf](https://github.com/dompdf/dompdf) – HTML to PDF converter
 
 ## License
 

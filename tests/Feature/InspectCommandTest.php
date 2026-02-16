@@ -81,3 +81,82 @@ it('handles date formatting in test file', function () {
     $this->artisan('inspect', ['file' => $testFile, '--sheet' => '1'])
         ->assertExitCode(0);
 });
+
+it('generates HTML report', function () {
+    $testFile = 'tests/fixtures/test.ods';
+    $outputFile = sys_get_temp_dir() . '/test-report-' . uniqid() . '.html';
+    
+    $this->artisan('inspect', [
+        'file' => $testFile,
+        '--sheet' => '1',
+        '--output' => 'html',
+        '--output-file' => $outputFile,
+    ])
+        ->expectsOutputToContain('HTML report saved')
+        ->assertExitCode(0);
+    
+    expect(file_exists($outputFile))->toBeTrue();
+    $content = file_get_contents($outputFile);
+    expect($content)->toContain('<!DOCTYPE html');
+    expect($content)->toContain('Spreadsheet Report');
+    expect($content)->toContain('TestSheet');
+    
+    unlink($outputFile);
+});
+
+it('generates PDF report', function () {
+    $testFile = 'tests/fixtures/test.ods';
+    $outputFile = sys_get_temp_dir() . '/test-report-' . uniqid() . '.pdf';
+    
+    $this->artisan('inspect', [
+        'file' => $testFile,
+        '--sheet' => '1',
+        '--output' => 'pdf',
+        '--output-file' => $outputFile,
+    ])
+        ->expectsOutputToContain('PDF report saved')
+        ->assertExitCode(0);
+    
+    expect(file_exists($outputFile))->toBeTrue();
+    expect(filesize($outputFile))->toBeGreaterThan(0);
+    
+    // Check PDF magic bytes
+    $content = file_get_contents($outputFile);
+    expect(str_starts_with($content, '%PDF'))->toBeTrue();
+    
+    unlink($outputFile);
+});
+
+it('fails when output-file is missing for html output', function () {
+    $testFile = 'tests/fixtures/test.ods';
+    
+    $this->artisan('inspect', [
+        'file' => $testFile,
+        '--sheet' => '1',
+        '--output' => 'html',
+    ])
+        ->expectsOutputToContain('--output-file is required')
+        ->assertExitCode(1);
+});
+
+it('fails when output-file is missing for pdf output', function () {
+    $testFile = 'tests/fixtures/test.ods';
+    
+    $this->artisan('inspect', [
+        'file' => $testFile,
+        '--sheet' => '1',
+        '--output' => 'pdf',
+    ])
+        ->expectsOutputToContain('--output-file is required')
+        ->assertExitCode(1);
+});
+
+it('works with LibreOffice ODS files', function () {
+    $testFile = 'tests/fixtures/test.ods';
+    
+    $this->artisan('inspect', ['file' => $testFile, '--sheet' => '1'])
+        ->expectsOutputToContain('TestSheet')
+        ->expectsOutputToContain('Name')
+        ->expectsOutputToContain('Value')
+        ->assertExitCode(0);
+});
