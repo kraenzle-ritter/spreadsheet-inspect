@@ -134,7 +134,7 @@ php inspect spreadsheet myfile.xlsx --sheet=1 --output=pdf --output-file=report.
 
 ## Requirements
 
-- PHP 8.2+
+- PHP 8.3+
 - Composer
 
 ## Testing
