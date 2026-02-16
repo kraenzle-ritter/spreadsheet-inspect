@@ -18,6 +18,23 @@ A CLI tool to inspect Excel (.xlsx, .xls) and LibreOffice (.ods) spreadsheet fil
 
 ## Installation
 
+### Download PHAR (recommended)
+
+Download the latest release:
+
+```bash
+curl -L https://github.com/kraenzle-ritter/spreadsheet-inspect/releases/latest/download/spreadsheet-inspect.phar -o spreadsheet-inspect
+chmod +x spreadsheet-inspect
+```
+
+Optionally move to your PATH:
+
+```bash
+sudo mv spreadsheet-inspect /usr/local/bin/
+```
+
+### From Source
+
 ```bash
 git clone https://github.com/kraenzle-ritter/spreadsheet-inspect.git
 cd spreadsheet-inspect
@@ -25,6 +42,8 @@ composer install
 ```
 
 ## Usage
+
+> **Note:** Replace `php inspect` with `spreadsheet-inspect` if using the PHAR.
 
 ### List all sheets
 
