@@ -1,7 +1,10 @@
 # Spreadsheet Inspect
 
 [![Tests](https://github.com/kraenzle-ritter/spreadsheet-inspect/actions/workflows/tests.yml/badge.svg)](https://github.com/kraenzle-ritter/spreadsheet-inspect/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/kraenzle-ritter/spreadsheet-inspect/branch/main/graph/badge.svg)](https://codecov.io/gh/kraenzle-ritter/spreadsheet-inspect)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PHP Version](https://img.shields.io/packagist/php-v/kraenzle-ritter/spreadsheet-inspect)](https://packagist.org/packages/kraenzle-ritter/spreadsheet-inspect)
+[![Downloads](https://img.shields.io/github/downloads/kraenzle-ritter/spreadsheet-inspect/total)](https://github.com/kraenzle-ritter/spreadsheet-inspect/releases)
 
 A CLI tool to inspect Excel (.xlsx, .xls) and LibreOffice (.ods) spreadsheet files. Analyze sheet structures, column statistics, find cross-sheet references, and extract embedded images.
 
@@ -26,15 +29,15 @@ composer install
 ### List all sheets
 
 ```bash
-php application inspect myfile.xlsx --sheets
+php inspect spreadsheet myfile.xlsx --sheets
 ```
 
 ### Analyze a specific sheet
 
 ```bash
-php application inspect myfile.xlsx --sheet=1
+php inspect spreadsheet myfile.xlsx --sheet=1
 # or by name
-php application inspect myfile.xlsx --sheet="Sheet Name"
+php inspect spreadsheet myfile.xlsx --sheet="Sheet Name"
 ```
 
 **Output:**
@@ -65,13 +68,13 @@ php application inspect myfile.xlsx --sheet="Sheet Name"
 ### Analyze images in a sheet
 
 ```bash
-php application inspect myfile.xlsx --sheet=1 --images
+php inspect spreadsheet myfile.xlsx --sheet=1 --images
 ```
 
 ### Extract images to a directory
 
 ```bash
-php application inspect myfile.xlsx --sheet=1 --extract-images=./images
+php inspect spreadsheet myfile.xlsx --sheet=1 --extract-images=./images
 ```
 
 ### Cross-sheet reference check
@@ -79,19 +82,19 @@ php application inspect myfile.xlsx --sheet=1 --extract-images=./images
 Find where values from a column appear in other sheets:
 
 ```bash
-php application inspect myfile.xlsx --sheet=1 --column=ProductID
+php inspect spreadsheet myfile.xlsx --sheet=1 --column=ProductID
 ```
 
 Check against a specific target sheet:
 
 ```bash
-php application inspect myfile.xlsx --sheet=1 --column=ProductID --cross-sheet=2
+php inspect spreadsheet myfile.xlsx --sheet=1 --column=ProductID --cross-sheet=2
 ```
 
 Compare only against a specific column in target sheets:
 
 ```bash
-php application inspect myfile.xlsx --sheet=1 --column=ProductID --target-column=ID
+php inspect spreadsheet myfile.xlsx --sheet=1 --column=ProductID --target-column=ID
 ```
 
 ### Options
@@ -115,13 +118,13 @@ php application inspect myfile.xlsx --sheet=1 --column=ProductID --target-column
 Generate a styled HTML report:
 
 ```bash
-php application inspect myfile.xlsx --sheet=1 --output=html --output-file=report.html
+php inspect spreadsheet myfile.xlsx --sheet=1 --output=html --output-file=report.html
 ```
 
 Generate a PDF report:
 
 ```bash
-php application inspect myfile.xlsx --sheet=1 --output=pdf --output-file=report.pdf
+php inspect spreadsheet myfile.xlsx --sheet=1 --output=pdf --output-file=report.pdf
 ```
 
 ## Supported Formats
@@ -131,7 +134,7 @@ php application inspect myfile.xlsx --sheet=1 --output=pdf --output-file=report.
 
 ## Requirements
 
-- PHP 8.1+
+- PHP 8.2+
 - Composer
 
 ## Testing

@@ -1,10 +1,10 @@
 <?php
 
-use App\Commands\InspectCommand;
+use App\Commands\SpreadsheetCommand;
 use Illuminate\Support\Collection;
 
 beforeEach(function () {
-    $this->command = new class extends InspectCommand {
+    $this->command = new class extends SpreadsheetCommand {
         // Expose protected methods for testing
         public function publicTruncateValue($value, int $maxLength = 100): string
         {
