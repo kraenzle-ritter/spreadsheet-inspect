@@ -1,7 +1,6 @@
 # Spreadsheet Inspect
 
 [![Tests](https://github.com/kraenzle-ritter/spreadsheet-inspect/actions/workflows/tests.yml/badge.svg)](https://github.com/kraenzle-ritter/spreadsheet-inspect/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/kraenzle-ritter/spreadsheet-inspect/branch/main/graph/badge.svg)](https://codecov.io/gh/kraenzle-ritter/spreadsheet-inspect)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP Version](https://img.shields.io/packagist/php-v/kraenzle-ritter/spreadsheet-inspect)](https://packagist.org/packages/kraenzle-ritter/spreadsheet-inspect)
 [![Downloads](https://img.shields.io/github/downloads/kraenzle-ritter/spreadsheet-inspect/total)](https://github.com/kraenzle-ritter/spreadsheet-inspect/releases)

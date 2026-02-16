@@ -66,11 +66,34 @@ jobs:
       - name: Run tests with coverage
         run: ./vendor/bin/pest --coverage --coverage-clover=coverage.xml
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+      - name: Generate coverage badge
+        run: |
+          COVERAGE=$(php -r "
+            \$xml = simplexml_load_file('coverage.xml');
+            \$metrics = \$xml->project->metrics;
+            \$covered = (int)\$metrics['coveredstatements'];
+            \$total = (int)\$metrics['statements'];
+            echo \$total > 0 ? round(\$covered / \$total * 100, 1) : 0;
+          ")
+          echo "Coverage: $COVERAGE%"
+          
+          # Determine color
+          if (( $(echo "$COVERAGE >= 80" | bc -l) )); then
+            COLOR="brightgreen"
+          elif (( $(echo "$COVERAGE >= 60" | bc -l) )); then
+            COLOR="yellow"
+          else
+            COLOR="red"
+          fi
+          
+          # Create badge JSON
+          echo "{\"schemaVersion\":1,\"label\":\"coverage\",\"message\":\"${COVERAGE}%\",\"color\":\"${COLOR}\"}" > coverage-badge.json
+          
+      - name: Upload coverage badge
+        uses: actions/upload-artifact@v4
         with:
-          files: coverage.xml
-          fail_ci_if_error: false
+          name: coverage-badge
+          path: coverage-badge.json
 
   code-style:
     runs-on: ubuntu-latest
