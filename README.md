@@ -23,7 +23,7 @@ A CLI tool to inspect Excel (.xlsx, .xls) and LibreOffice (.ods) spreadsheet fil
 Download the latest release:
 
 ```bash
-curl -L https://github.com/kraenzle-ritter/spreadsheet-inspect/releases/latest/download/spreadsheet-inspect.phar -o spreadsheet-inspect
+curl -L https://github.com/kraenzle-ritter/spreadsheet-inspect/releases/latest/download/spreadsheet-inspect -o spreadsheet-inspect
 chmod +x spreadsheet-inspect
 ```
 
